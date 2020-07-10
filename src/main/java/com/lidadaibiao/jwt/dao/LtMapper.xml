@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lidadaibiao.jwt.dao.LtMapper">
+
+    <resultMap id="LtResultMap" type="com.lidadaibiao.jwt.pojo.LtUser">
+        <id column="USER_ID" jdbcType="VARCHAR" property="userId" />
+        <result column="USER_NAME" jdbcType="VARCHAR" property="userName" />
+        <result column="PASS_WORD" jdbcType="VARCHAR" property="passWord" />
+    </resultMap>
+    <resultMap id="LtActive" type="com.lidadaibiao.jwt.pojo.LtActive">
+        <id column="ACTIVE_ID" jdbcType="VARCHAR" property="activeId" />
+        <result column="ACTIVE_NAME" jdbcType="VARCHAR" property="activeName" />
+        <result column="ACTIVE_ADDRESS" jdbcType="VARCHAR" property="activeAddress" />
+        <result column="USER_ID" jdbcType="VARCHAR" property="userId"/>
+    </resultMap>
+
+    <select id="getUserByUserNameAndPassWord" resultMap="LtResultMap" parameterType="map">
+        SELECT lt_user.USER_ID,lt_user.USER_NAME,lt_user.PASS_WORD  FROM lt_user  WHERE USER_NAME= #{userName} AND PASS_WORD = #{passWord}
+    </select>
+
+    <insert id="insertActive" parameterType="LtActive">
+        INSERT INTO lt_active (ACTIVE_ID,ACTIVE_NAME,ACTIVE_ADDRESS,USER_ID) VALUE (#{activeId},#{activeName},#{activeAddress},#{userId})
+    </insert>
+    <select id="getActiveByUserId" resultMap="LtActive" parameterType="string">
+      SELECT *  FROM lt_active  WHERE USER_ID=#{userId}
+    </select>
+    <delete id="delActiveById" parameterType="string">
+        DELETE FROM lt_active WHERE ACTIVE_ID=#{activeId}
+    </delete>
+
+</mapper>

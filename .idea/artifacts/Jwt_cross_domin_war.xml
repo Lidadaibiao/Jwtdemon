@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="war" name="Jwt-cross-domin:war">
+    <output-path>$PROJECT_DIR$/target</output-path>
+    <root id="archive" name="Jwt-cross-domin-1.0-SNAPSHOT.war">
+      <element id="artifact" artifact-name="Jwt-cross-domin:war exploded" />
+    </root>
+  </artifact>
+</component>

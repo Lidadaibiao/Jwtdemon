@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	   xmlns:mvc="http://www.springframework.org/schema/mvc"
+	   xmlns:context="http://www.springframework.org/schema/context"
+	   xmlns:jdbc="http://www.springframework.org/schema/jdbc"
+	   xmlns:tx="http://www.springframework.org/schema/tx"
+	   xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/mvc
+        http://www.springframework.org/schema/mvc/spring-mvc.xsd
+        http://www.springframework.org/schema/context
+        http://www.springframework.org/schema/context/spring-context.xsd
+		http://www.springframework.org/schema/jdbc
+		http://www.springframework.org/schema/jdbc/spring-jdbc
+   		http://www.springframework.org/schema/tx
+   		http://www.springframework.org/schema/tx/spring-tx.xsd
+		">
+	<!-- 前端视图名的配置 -->
+	<bean id="viewResolver"
+		  class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<!--前缀名，这里主要是指定jsp页面在什么目录下面如果在根目录下就写 / -->
+		<property name="prefix" value="/"></property>
+		<!--后缀名，视图资源的后缀名是，这里是 .jsp -->
+		<property name="suffix" value=".jsp"></property>
+	</bean>
+	<!-- 配置数据源的bean，高效连接数据库 -->
+	<bean id="dataSource"
+		  class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+		<property name="driverClassName" value="com.mysql.jdbc.Driver">
+		</property>
+		<property name="url" value="jdbc:mysql://localhost:3306/ssm?useUnicode=true&amp;characterEncoding=UTF-8">
+		</property>
+		<property name="username" value="root"></property>
+		<property name="password" value="root"></property>
+	</bean>
+	<!--让Spring管理mybatis中的核心对象SqlSessionFactory -->
+	<bean id="sqlSessionFactoryBean" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<!-- 注入依赖对象：dataSource  注意这里的名字，一定不能乱起 -->
+		<property name="dataSource" ref="dataSource"></property>
+		<!-- mybatis配置文件 -->
+		<property name="configLocation" value="classpath:mybatis-config.xml"></property>
+	</bean>
+	<!-- Mapper接口所在包名，Spring会自动查找其下的类并生成接口的实现类 -->
+	<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+		<property name="basePackage" value="com.lidadaibiao.jwt.dao"></property>
+		<!--sqlSessionFactory 指定SqlSessionFactoryBean 对象 -->
+		<property name="sqlSessionFactory" ref="sqlSessionFactoryBean"></property>
+	</bean>
+	<!--配置事务处理类 -->
+	<bean id="tm"
+		  class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<!-- 这里会引用上面的数据源 -->
+		<property name="dataSource" ref="dataSource"></property>
+	</bean>
+	<!-- 配置事务通知属性 -->
+	<tx:advice id="txAdvice"  transaction-manager="tm">
+		<!--
+            定义事务传播属性 这里的事务就限定了你在实现类中起名字的规定，需要事务的
+            增删改以update、add、delete开头
+         -->
+		<tx:attributes>
+			<tx:method name="update*" propagation="REQUIRED" />
+			<tx:method name="add*" propagation="REQUIRED" />
+			<tx:method name="delete*" propagation="REQUIRED" />
+			<tx:method name="*" propagation="REQUIRED" read-only="true" />
+		</tx:attributes>
+	</tx:advice>
+	<context:component-scan base-package="com.lidadaibiao.jwt"/>
+
+	<mvc:annotation-driven/>
+
+	<mvc:resources location="/js/" mapping="/js/**"></mvc:resources>
+	<!-- 配置mybatis的sessionFactory实例，这个bean由spring提供 org.mybatis.spring.SqlSessionFactoryBean -->
+	<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+
+		<!--配置数据源，操作数据库-->
+		<property name="dataSource" ref="dataSource"/>
+		<!--加载配置文件-->
+		<property name="configLocation" value="classpath:mybatis-config.xml"/>
+		<!-- 自动扫描mapperXml 文件位置 -->
+		<property name="mapperLocations" value="classpath:com/lidadaibiao/jwt/**/*.xml"/>
+	</bean>
+	<!-- 扫描包中的注解，实现依赖注入 -->
+	<context:component-scan base-package="com.lidadaibiao.jwt"></context:component-scan>
+	<!-- 开启注解功能 -->
+	<mvc:annotation-driven />
+	<!-- 开启静态资源功能 -->
+	<mvc:resources location="/js/" mapping="/js/**"/>
+	<!--扫描接口包-->
+	<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+		<property name="basePackage" value="com.lidadaibiao.jwt.dao"></property>
+	</bean>
+</beans>
+
+
+
+
+
+
+
+
+
+
+
